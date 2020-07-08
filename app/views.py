@@ -63,32 +63,28 @@ def add_action():
 
 @app.route("/getuser")
 def get_user():
-    userid = request.args.get("userid", default="")
+    userid = int(request.args.get("userid", default=0))
     telephone = request.args.get("telephone", default="")
 
-    if userid != "":
+    if userid != 0:
         return get_user_by_id(userid)
     if telephone != "":
         return get_user_by_number(telephone)
 
 def get_user_by_id(userid):
     return jsonify(
-        list(
-            filter(
-                lambda user: user.userid == userid,
-                User.query.all()
-            )
-        )[0].dict
+        User.query.
+            filter(User.userid==userid)
+            .first()
+            .dict
     )
 
 def get_user_by_number(telephone):
     return jsonify(
-        list(
-            filter(
-                lambda user: user.telephone == telephone,
-                User.query.all()
-            )
-        )[0].dict
+        User.query.
+            filter(User.telephone == telephone)
+            .first()
+            .dict
     )
 
 @app.route("/getusers")
