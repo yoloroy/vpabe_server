@@ -73,16 +73,16 @@ def get_user():
 
 def get_user_by_id(userid):
     return jsonify(
-        User.query.
-            filter(User.userid==userid)
+        User.query
+            .filter(User.userid==userid)
             .first()
             .dict
     )
 
 def get_user_by_number(telephone):
     return jsonify(
-        User.query.
-            filter(User.telephone == telephone)
+        User.query
+            .filter(User.telephone == telephone)
             .first()
             .dict
     )
