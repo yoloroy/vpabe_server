@@ -61,6 +61,36 @@ def add_action():
     actions.append(request.args.get("action"))
     return "200"
 
+@app.route("/getuser")
+def get_user():
+    userid = request.args.get("userid", default="")
+    telephone = request.args.get("telephone", default="")
+
+    if userid != "":
+        return get_user_by_id(userid)
+    if telephone != "":
+        return get_user_by_number(telephone)
+
+def get_user_by_id(userid):
+    return jsonify(
+        list(
+            filter(
+                lambda user: user.userid == userid,
+                User.query.all()
+            )
+        )[0].dict
+    )
+
+def get_user_by_number(telephone):
+    return jsonify(
+        list(
+            filter(
+                lambda user: user.telephone == telephone,
+                User.query.all()
+            )
+        )[0].dict
+    )
+
 @app.route("/getusers")
 def get_users():
     return jsonify([user.dict for user in User.query.all()])
