@@ -6,9 +6,11 @@ class Message(Base):
     __tablename__ = "messages"
     _rowid_ = Column(Integer, primary_key=True)
     text = Column(String())
+    sender = Column(Integer, nullable=False)
 
-    def __init__(self, text=None):
+    def __init__(self, text, sender):
         self.text = text
+        self.sender = sender
 
     def __repr__(self):
         return str(self.dict)
@@ -29,7 +31,8 @@ class Message(Base):
         return \
             {
                 "_rowid_": self._rowid_,
-                "text": self.text
+                "text": self.text,
+                "sender": self.sender
             }
 
 

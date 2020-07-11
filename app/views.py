@@ -25,7 +25,8 @@ def put_message():
         actions.append("message")
 
     Message(
-        text=request.args.get("text")
+        text=request.args.get("text"),
+        sender=int(request.args.get("sender"))
     ).put()
 
     return "200"
@@ -70,6 +71,7 @@ def get_user():
         return get_user_by_id(userid)
     if telephone != "":
         return get_user_by_number(telephone)
+    return "400"
 
 def get_user_by_id(userid):
     return jsonify(
