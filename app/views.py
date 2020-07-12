@@ -26,7 +26,8 @@ def put_message():
 
     Message(
         text=request.args.get("text"),
-        sender=int(request.args.get("sender"))
+        sender=int(request.args.get("sender")),
+        chatid=int(request.args.get("chatid"))
     ).put()
 
     return "200"

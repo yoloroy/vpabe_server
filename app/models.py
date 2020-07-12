@@ -7,10 +7,12 @@ class Message(Base):
     _rowid_ = Column(Integer, primary_key=True)
     text = Column(String())
     sender = Column(Integer, nullable=False)
+    chatid = Column(Integer, nullable=False)
 
-    def __init__(self, text, sender):
+    def __init__(self, text, sender, chatid):
         self.text = text
         self.sender = sender
+        self.chatid = chatid
 
     def __repr__(self):
         return str(self.dict)
@@ -32,7 +34,10 @@ class Message(Base):
             {
                 "_rowid_": self._rowid_,
                 "text": self.text,
-                "sender": self.sender
+                "sender":
+                    User.query.filter(User.userid==self.sender)
+                        .first()
+                        .username
             }
 
 
