@@ -37,7 +37,8 @@ class Message(Base):
                 "sender":
                     User.query.filter(User.userid==self.sender)
                         .first()
-                        .username
+                        .username,
+                "chatid": self.chatid
             }
 
 

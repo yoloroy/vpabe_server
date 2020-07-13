@@ -34,7 +34,25 @@ def put_message():
 
 @app.route("/getmessages")
 def get_messages():
-    return jsonify([message.dict for message in Message.query.all()])
+    chatid = int(request.args.get("chatid", default="0"))
+    after = int(request.args.get("after", default="0"))
+
+    temp = Message.query\
+        .filter(Message.chatid == chatid)\
+        .filter(Message._rowid_ > after)
+
+    while temp.count() == 0:
+        sleep(0.1)
+        temp = Message.query \
+            .filter(Message.chatid == chatid) \
+            .filter(Message._rowid_ > after)
+
+    return jsonify(
+        [
+            message.dict
+            for message in temp
+        ]
+    )
 
 @app.route("/getaction")
 def get_action():
@@ -77,7 +95,7 @@ def get_user():
 def get_user_by_id(userid):
     return jsonify(
         User.query
-            .filter(User.userid==userid)
+            .filter(User.userid == userid)
             .first()
             .dict
     )
