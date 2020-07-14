@@ -1,7 +1,11 @@
 <component name="ProjectDictionaryState">
   <dictionary name="pmart">
     <words>
+      <w>authorid</w>
       <w>chatid</w>
+      <w>dateid</w>
+      <w>eventid</w>
+      <w>likeid</w>
     </words>
   </dictionary>
 </component>

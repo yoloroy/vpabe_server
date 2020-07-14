@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
 from app import app
-from app.models import Message, User
+from app.models import Message, User, Event
 from database.database import db_session
 
 from time import sleep
@@ -9,6 +9,7 @@ from time import sleep
 waiters = 0
 actions = []
 
+# region index
 @app.route('/')
 def none():
     return "He110!"
@@ -18,7 +19,9 @@ def index():
     with open("app/index.html") as f:
         text = f.read()
     return text
+# endregion
 
+# region messages
 @app.route("/putmessage")
 def put_message():
     if "message" not in actions:
@@ -54,6 +57,13 @@ def get_messages():
         ]
     )
 
+@app.route("/clearallmessages")
+def clear_all_messages():
+    actions.append("message")
+    return str(Message.clear_all())
+# endregion
+
+# region action
 @app.route("/getaction")
 def get_action():
     global waiters
@@ -71,16 +81,13 @@ def get_action():
 
     return action
 
-@app.route("/clearallmessages")
-def clear_all_messages():
-    actions.append("message")
-    return str(Message.clear_all())
-
 @app.route("/addaction")
 def add_action():
     actions.append(request.args.get("action"))
     return "200"
+# endregion
 
+# region user
 @app.route("/getuser")
 def get_user():
     userid = int(request.args.get("userid", default=0))
@@ -124,9 +131,26 @@ def put_user():
         avatar=request.args.get("avatar", default="")
     ).put()
     return "200"
+# endregion
 
+# region event
+def put_event():
+    pass
+
+@app.route("/getevents")
+def get_events():  # TODO: add filtering
+    return jsonify(
+        [
+            event.dict
+            for event in Event.query.all()
+        ]
+    )
+# endregion
+
+# region db
 # noinspection PyUnusedLocal
 # because from tutorial
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+ #endregion
