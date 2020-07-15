@@ -6,6 +6,8 @@
       <w>dateid</w>
       <w>eventid</w>
       <w>likeid</w>
+      <w>messageid</w>
+      <w>tablename</w>
       <w>userid</w>
     </words>
   </dictionary>

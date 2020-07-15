@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
 from app import app
-from app.models import Message, User, Event, SubscribeItem
+from app.models import Message, User, Event, SubscribeItem, Attachment
 from database.database import db_session
 
 from time import sleep
@@ -38,11 +38,19 @@ def put_message():
 
 @app.route("/getmessages")
 def get_messages():
+    def add_attachments(message: dict):
+        message["attachments"] = [
+            attachment.dict
+            for attachment in Attachment.query
+                .filter(Attachment.messageid == message["_rowid_"])
+        ]
+        return message
+
     chatid = int(request.args.get("chatid", default="0"))
     after = int(request.args.get("after", default="0"))
 
-    temp = Message.query\
-        .filter(Message.chatid == chatid)\
+    temp = Message.query \
+        .filter(Message.chatid == chatid) \
         .filter(Message._rowid_ > after)
 
     while temp.count() == 0:
@@ -53,7 +61,7 @@ def get_messages():
 
     return jsonify(
         [
-            message.dict
+            add_attachments(message.dict)
             for message in temp
         ]
     )
