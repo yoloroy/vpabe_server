@@ -1,10 +1,11 @@
 from flask import request, jsonify
 
 from app import app
-from app.models import Message, User, Event
+from app.models import Message, User, Event, SubscribeItem
 from database.database import db_session
 
 from time import sleep
+from functools import reduce
 
 waiters = 0
 actions = []
@@ -139,12 +140,34 @@ def put_event():
 
 @app.route("/getevents")
 def get_events():  # TODO: add filtering
+    userid = int(request.args.get("userid", default="0"))
+
+    if userid:
+        return get_events_for_user(userid)
+
     return jsonify(
         [
             event.dict
             for event in Event.query.all()
         ]
     )
+
+def get_events_for_user(userid):
+    subscribes = [
+        subItem.eventid
+        for subItem in SubscribeItem.query
+            .filter(SubscribeItem.userid == userid)
+    ]
+
+    return jsonify([
+        event.dict
+        for event in reduce(
+            lambda a, b: a + b,
+            [
+                Event.query.filter(Event.eventid == eventid)
+                for eventid in subscribes
+            ])
+    ])
 # endregion
 
 # region db

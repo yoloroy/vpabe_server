@@ -215,3 +215,35 @@ class Like(Base):
             "likeid":  self.likeid,
             "count": self.count
         }
+
+
+class SubscribeItem(Base):
+    __tablename__ = "subscribers"
+    subid = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
+    eventid = Column(Integer, nullable=False)
+    userid = Column(Integer, nullable=False)
+
+    def __init__(self, eventid, subid):
+        self.eventid = eventid
+        self.subid = subid
+
+    def __repr__(self):
+        return str(self.dict)
+
+    def put(self):
+        db_session.add(self)
+        db_session.commit()
+
+    # why not?
+    @staticmethod
+    def clear_all():
+        deleted = Message.query.delete()
+        db_session.commit()
+        return deleted
+
+    @property
+    def dict(self):
+        return {
+            "eventid": self.eventid,
+            "userid": self.userid
+        }
