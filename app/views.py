@@ -1,11 +1,13 @@
 from flask import request, jsonify
 
 from app import app
-from app.models import Message, User, Event, SubscribeItem, Attachment
+from app.models import *
 from database.database import db_session
 
 from time import sleep
 from functools import reduce
+
+from utils import sum_dicts
 
 waiters = 0
 actions = []
@@ -70,6 +72,32 @@ def get_messages():
 def clear_all_messages():
     actions.append("message")
     return str(Message.clear_all())
+# endregion
+
+# region chats
+@app.route("/getchats")
+def get_chats_by_user():
+    def last_message(chatid: int):
+        return Message.query.filter(Message.chatid == chatid)[-1].dict
+
+    userid = int(request.args.get("userid"))
+
+    return jsonify([
+        chat_view
+        for chat_view in map(
+            lambda chat: sum_dicts(
+                chat.dict,
+                {"lastMessage": last_message(chat.chatid)}
+            ),
+            Chat.query.filter(Chat.userid == userid)
+        )
+    ])
+
+def add_chat():
+    pass
+
+def delete_chat():
+    pass
 # endregion
 
 # region action
