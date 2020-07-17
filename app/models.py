@@ -17,7 +17,6 @@ class Model:
         """Return data by dict"""
 
 
-
 class Message(Base, Model):
     __tablename__ = "messages"
     _rowid_ = Column(Integer, primary_key=True)
