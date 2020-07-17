@@ -1,8 +1,24 @@
+from abc import ABCMeta, abstractmethod
+
 from sqlalchemy import Column, String, Integer
 from database.database import Base, db_session
 
 
-class Message(Base):
+class Model:
+    __metaclass__ = ABCMeta
+
+    def put(self):
+        """Put object to db"""
+        db_session.add(self)
+        db_session.commit()
+
+    @abstractmethod
+    def dict(self):
+        """Return data by dict"""
+
+
+
+class Message(Base, Model):
     __tablename__ = "messages"
     _rowid_ = Column(Integer, primary_key=True)
     text = Column(String())
@@ -17,17 +33,6 @@ class Message(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    #why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         sender: User = User.query.filter(User.userid==self.sender).first()
@@ -41,7 +46,7 @@ class Message(Base):
         }
 
 
-class User(Base):
+class User(Base, Model):
     __tablename__ = "users"
     userid = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     username = Column(String(), nullable=False)
@@ -58,17 +63,6 @@ class User(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         return {
@@ -80,7 +74,7 @@ class User(Base):
         }
 
 
-class Event(Base):
+class Event(Base, Model):
     __tablename__ = "events"
     eventid = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     name = Column(String(), nullable=False)
@@ -109,17 +103,6 @@ class Event(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         return {
@@ -139,7 +122,7 @@ class Event(Base):
         }
 
 
-class Date(Base):
+class Date(Base, Model):
     __tablename__ = "dates"
     dateid = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     month = Column(Integer, nullable=False)
@@ -162,17 +145,6 @@ class Date(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         return \
@@ -185,7 +157,7 @@ class Date(Base):
             }
 
 
-class Like(Base):
+class Like(Base, Model):
     __tablename__ = "likes"
     likeid = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     count = Column(Integer, nullable=False)
@@ -198,17 +170,6 @@ class Like(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         return {
@@ -217,7 +178,7 @@ class Like(Base):
         }
 
 
-class SubscribeItem(Base):
+class SubscribeItem(Base, Model):
     __tablename__ = "subscribers"
     subid = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     eventid = Column(Integer, nullable=False)
@@ -230,17 +191,6 @@ class SubscribeItem(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         return {
@@ -249,7 +199,7 @@ class SubscribeItem(Base):
         }
 
 
-class Attachment(Base):
+class Attachment(Base, Model):
     __tablename__ = "message_attachments"
     _rowid_ = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     messageid = Column(Integer, nullable=False)
@@ -269,17 +219,6 @@ class Attachment(Base):
     def __repr__(self):
         return str(self.dict)
 
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
-
     @property
     def dict(self):
         return {
@@ -288,7 +227,7 @@ class Attachment(Base):
         }
 
 
-class Chat(Base):
+class Chat(Base, Model):
     __tablename__ = "chats"
     _rowid_ = Column(Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
     chatid = Column(Integer, nullable=False)
@@ -304,17 +243,6 @@ class Chat(Base):
 
     def __repr__(self):
         return str(self.dict)
-
-    def put(self):
-        db_session.add(self)
-        db_session.commit()
-
-    # why not?
-    @staticmethod
-    def clear_all():
-        deleted = Message.query.delete()
-        db_session.commit()
-        return deleted
 
     @property
     def dict(self):

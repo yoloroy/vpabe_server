@@ -67,11 +67,6 @@ def get_messages():
             for message in temp
         ]
     )
-
-@app.route("/clearallmessages")
-def clear_all_messages():
-    actions.append("message")
-    return str(Message.clear_all())
 # endregion
 
 # region chats
