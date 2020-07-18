@@ -9,6 +9,7 @@ from functools import reduce
 
 from utils import sum_dicts
 
+
 waiters = 0
 actions = []
 
@@ -30,11 +31,20 @@ def put_message():
     if "message" not in actions:
         actions.append("message")
 
-    Message(
+    rowid = Message(
         text=request.args.get("text"),
         sender=int(request.args.get("sender")),
         chatid=int(request.args.get("chatid"))
     ).put()
+
+    links = request.args.get("attachment_link").split(';')
+
+    for link in links:
+        Attachment(
+            rowid,
+            "image",
+            link
+        ).put()
 
     return "200"
 
@@ -73,16 +83,27 @@ def get_messages():
 @app.route("/getchats")
 def get_chats_by_user():
     def last_message(chatid: int):
-        return Message.query.filter(Message.chatid == chatid)[-1].dict
+        return Message.query.filter(Message.chatid == chatid)[-1]
 
     userid = int(request.args.get("userid"))
+    chats_count = int(request.args.get("chatscount"))
+    last_message_sum = int(request.args.get("lms"))
+
+    my_chats = Chat.query.filter(Chat.userid == userid)
+    temp_cc = my_chats.count()
+    temp_lms = sum(map(lambda chat: last_message(chat.chatid)._rowid_, my_chats))
+
+    while temp_cc == chats_count and temp_lms == last_message_sum:
+        my_chats = Chat.query.filter(Chat.userid == userid)
+        temp_cc = my_chats.count()
+        temp_lms = sum(map(lambda chat: last_message(chat.chatid)._rowid_, my_chats))
 
     return jsonify([
         chat_view
         for chat_view in map(
             lambda chat: sum_dicts(
                 chat.dict,
-                {"lastMessage": last_message(chat.chatid)}
+                {"lastMessage": last_message(chat.chatid).dict}
             ),
             Chat.query.filter(Chat.userid == userid)
         )
