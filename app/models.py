@@ -12,6 +12,9 @@ class Model:
         db_session.add(self)
         db_session.commit()
 
+        # noinspection PyUnresolvedReferences
+        return self.query.count()
+
     @abstractmethod
     def dict(self):
         """Return data by dict"""
